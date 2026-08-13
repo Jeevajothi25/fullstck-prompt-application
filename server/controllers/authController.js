@@ -1,12 +1,23 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 exports.signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide name, email and password' });
+    }
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    // basic email check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) return res.status(400).json({ message: 'Invalid email' });
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ message: 'Database not connected' });
     }
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already in use' });
@@ -25,6 +36,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ message: 'Please provide email and password' });
+    if (mongoose.connection.readyState !== 1) return res.status(500).json({ message: 'Database not connected' });
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
     const match = await bcrypt.compare(password, user.password);
@@ -40,6 +52,7 @@ exports.login = async (req, res) => {
 
 exports.me = async (req, res) => {
   try {
+    if (mongoose.connection.readyState !== 1) return res.status(500).json({ message: 'Database not connected' });
     const user = await User.findById(req.userId).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     return res.json({ user });

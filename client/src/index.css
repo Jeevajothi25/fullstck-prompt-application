@@ -6,3 +6,57 @@ body{margin:0;color:#111;background:#f8fafc}
 .card{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
 .btn{background:var(--accent);color:#fff;padding:10px 14px;border:none;border-radius:6px;cursor:pointer}
 a{color:var(--accent);text-decoration:none}
+
+/* Auth layout */
+.auth-root{display:flex;min-height:100vh}
+.auth-left{flex:0 0 55%;background:linear-gradient(180deg,#071033 0%,#0b1530 100%);color:#fff;padding:56px;position:relative;overflow:hidden}
+.auth-right{flex:0 0 45%;display:flex;align-items:center;justify-content:center;padding:40px;background:linear-gradient(180deg,#f7f9fc, #ffffff)}
+.auth-panel{width:100%;max-width:420px;background:rgba(255,255,255,0.82);backdrop-filter:blur(6px);border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.12)}
+.brand{font-weight:700;font-size:20px;letter-spacing:0.4px}
+.left-head{font-size:28px;margin-top:12px;line-height:1.05}
+.left-sub{color:rgba(255,255,255,0.85);margin-top:12px;max-width:420px}
+.journey{margin-top:28px;font-family:inherit}
+.journey .step{display:flex;align-items:center;gap:12px;margin:12px 0}
+.node{width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,#ffd166,#ff6b6b);box-shadow:0 6px 18px rgba(255,107,107,0.12)}
+.connector{width:2px;height:32px;background:rgba(255,255,255,0.15);margin-left:6px}
+.mini-card{position:relative;background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));border-radius:10px;padding:10px;color:#fff;width:140px;margin:12px;box-shadow:0 6px 20px rgba(2,6,23,0.25);opacity:0.95}
+.mini-grid{display:flex;flex-wrap:wrap;gap:12px;position:absolute;right:24px;top:80px}
+.floating{animation:float 6s ease-in-out infinite}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+
+/* Orbit */
+.orbit{position:absolute;left:-40px;bottom:-40px;width:220px;height:220px;border-radius:50%;pointer-events:none}
+.orbit .icon{position:absolute;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.orbit .i1{left:50%;top:4%;transform:translate(-50%,0);}
+.orbit .i2{right:4%;top:50%;transform:translate(0,-50%);}
+.orbit .i3{left:50%;bottom:4%;transform:translate(-50%,0);}
+.orbit .i4{left:4%;top:50%;transform:translate(0,-50%);}
+.orbit svg{width:100%;height:100%;opacity:0.05}
+
+/* Auth form styles */
+.form-label{font-size:12px;letter-spacing:0.9px;color:#6b7280;margin-bottom:6px}
+.form-heading{font-size:20px;font-weight:700;margin:6px 0}
+.form-sub{color:#6b7280;margin-bottom:12px}
+.form-field{display:flex;flex-direction:column;margin-bottom:12px}
+.form-field input{padding:12px 14px;border-radius:10px;border:1px solid #e6eef8;outline:none;font-size:14px}
+.form-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.muted{color:#6b7280}
+.cta{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+.progress-line{font-size:13px;color:#374151;margin-top:12px}
+
+/* Password strength */
+.strength{display:flex;gap:8px;align-items:center;margin-top:6px}
+.dots{display:flex;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:#e6eef8}
+.dot.active.weak{background:#ff6b6b}
+.dot.active.medium{background:#ffb020}
+.dot.active.strong{background:#10b981}
+
+/* Responsive */
+@media(max-width:900px){
+	.auth-root{flex-direction:column}
+	.auth-left{display:none}
+	.auth-right{flex:1;padding:20px}
+	.orbit{display:none}
+}
+
