@@ -2,79 +2,195 @@ import React, { useState } from 'react'
 import { login as loginApi } from '../services/api'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import AuthLeft from '../components/AuthLeft'
 
-export default function Login(){
-  const [form, setForm] = useState({email:'',password:'',remember:false})
+export default function Login() {
+  const [form, setForm] = useState({ email: '', password: '', remember: false })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [show, setShow] = useState(false)
   const nav = useNavigate()
   const { login } = useAuth()
 
-  const handle = async (e)=>{
-    e.preventDefault(); setError(null); setLoading(true)
-    try{
+  const handle = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+    try {
       const res = await loginApi({ email: form.email, password: form.password })
+      if (res.token) {
+        login(res.token, res.user)
+        nav('/dashboard')
+      } else {
+        setLoading(false)
+        setError(res.message || 'Incorrect email or password. Please try again.')
+      }
+    } catch (err) {
       setLoading(false)
-      if (res.token){ login(res.token, res.user); nav('/dashboard') }
-      else setError(res.message || 'Login failed')
-    }catch(err){ setLoading(false); setError('Network error') }
+      setError('Unable to sign in. Please check your credentials and try again.')
+    }
   }
 
   return (
-    <div className="auth-root">
-      <AuthLeft signup={false} />
-      <div className="auth-right">
-        <div className="auth-panel" role="region" aria-labelledby="login-heading">
-          <div className="form-label">WELCOME BACK</div>
-          <h3 id="login-heading" className="form-heading">Continue where you left off.</h3>
-          <p className="form-sub">Your next lesson is waiting for you.</p>
-          <form onSubmit={handle} aria-describedby="login-error">
+    <div className="login-page">
+      {/* Left Panel - Brand Experience */}
+      <div className="login-left-panel">
+        <div className="left-content">
+          {/* Brand */}
+          <div className="brand-section">
+            <div className="brand-icon">📚</div>
+            <div className="brand-name">LEARNHUB</div>
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="left-heading">
+            Build skills.<br />
+            Shape your future.
+          </h1>
+
+          {/* Supporting Text */}
+          <p className="left-description">
+            Learn practical skills from expert-led courses and keep moving toward your goals.
+          </p>
+
+          {/* Continue Learning Card */}
+          <div className="continue-card">
+            <div className="continue-label">CONTINUE LEARNING</div>
+            <div className="continue-course">Full Stack Development</div>
+            <div className="progress-bar-container">
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: '72%' }}></div>
+              </div>
+              <div className="progress-text">72% complete</div>
+            </div>
+            <a href="#" className="continue-link">Continue your journey →</a>
+          </div>
+
+          {/* Statistics */}
+          <div className="stats-section">
+            <div className="stat">
+              <div className="stat-number">10K+</div>
+              <div className="stat-label">Learners</div>
+            </div>
+            <div className="stat">
+              <div className="stat-number">500+</div>
+              <div className="stat-label">Courses</div>
+            </div>
+            <div className="stat">
+              <div className="stat-number">50+</div>
+              <div className="stat-label">Skills</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Login Form */}
+      <div className="login-right-panel">
+        <div className="login-form-container">
+          {/* Header */}
+          <div className="form-header">
+            <div className="form-welcome">Welcome back</div>
+            <h2 className="form-heading">Continue learning.</h2>
+            <p className="form-description">
+              Sign in to access your courses and track your progress.
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handle} className="auth-form" aria-describedby={error ? 'login-error' : undefined}>
+            {/* Email Field */}
             <div className="form-field">
-              <label className="form-label">Email address</label>
-              <input required type="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} aria-label="Email address" />
+              <label htmlFor="email" className="form-label">Email address</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email address"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                required
+                className="form-input"
+              />
             </div>
 
+            {/* Password Field */}
             <div className="form-field">
-              <label className="form-label">Password</label>
-              <div style={{position:'relative'}}>
-                <input required type={show? 'text':'password'} placeholder="Enter your password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} aria-label="Password" />
-                <button type="button" onClick={()=>setShow(s=>!s)} aria-label={show? 'Hide password':'Show password'} style={{position:'absolute',right:10,top:8,background:'transparent',border:'none',cursor:'pointer'}}>{show? '🙈':'👁️'}</button>
+              <label htmlFor="password" className="form-label">Password</label>
+              <div className="password-input-wrapper">
+                <input
+                  id="password"
+                  type={show ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  required
+                  className="form-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow(!show)}
+                  className="password-visibility-btn"
+                  aria-label={show ? 'Hide password' : 'Show password'}
+                >
+                  {show ? '✓' : '○'}
+                </button>
               </div>
             </div>
 
-            <div className="form-row">
-              <label style={{display:'flex',alignItems:'center',gap:8}}><input type="checkbox" checked={form.remember} onChange={e=>setForm({...form,remember:e.target.checked})} /> <span className="muted">Remember me</span></label>
-              <a href="#" className="muted">Forgot password?</a>
+            {/* Form Options */}
+            <div className="form-options">
+              <label className="remember-me">
+                <input
+                  type="checkbox"
+                  checked={form.remember}
+                  onChange={(e) => setForm({ ...form, remember: e.target.checked })}
+                />
+                <span>Remember me</span>
+              </label>
+              <a href="#" className="forgot-password">Forgot password?</a>
             </div>
 
-            {error && <div id="login-error" style={{color:'crimson',marginTop:12}}>{error}</div>}
-
-            <div className="progress-line" aria-hidden>
-              <div style={{fontSize:13,color:'#374151'}}>Your learning journey</div>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginTop:6}}>
-                <div style={{display:'flex',gap:6,alignItems:'center'}}>
-                  <div style={{width:8,height:8,background:'#111',borderRadius:8}}></div>
-                  <div style={{width:60,height:6,background:'#d1d5db',borderRadius:6}}></div>
-                  <div style={{width:8,height:8,background:'#111',borderRadius:8}}></div>
-                  <div style={{width:60,height:6,background:'#d1d5db',borderRadius:6}}></div>
-                  <div style={{width:8,height:8,background:'#111',borderRadius:8}}></div>
-                  <div style={{width:60,height:6,background:'#d1d5db',borderRadius:6}}></div>
-                  <div style={{width:8,height:8,background:'#fff',borderRadius:8,boxShadow:'0 0 8px rgba(59,130,246,0.6)'}}></div>
-                </div>
-                <div style={{fontSize:12,color:'#6b7280'}}>Explore&nbsp;&nbsp;Learn&nbsp;&nbsp;Practice&nbsp;&nbsp;Grow</div>
+            {/* Error Message */}
+            {error && (
+              <div id="login-error" className="error-box">
+                {error}
               </div>
-            </div>
+            )}
 
-            <div className="cta">
-              <button className="btn" type="submit" disabled={loading}>{loading? 'Signing in...':'Continue Learning →'}</button>
-            </div>
-
-            <div style={{marginTop:14,fontSize:14}}>
-              <div>New to LearnHub? <Link to="/signup">Start your learning journey →</Link></div>
-            </div>
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="sign-in-btn"
+              aria-busy={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner"></span>
+                  Signing in...
+                </>
+              ) : (
+                'Sign in'
+              )}
+            </button>
           </form>
+
+          {/* Divider */}
+          <div className="divider">
+            <span>OR</span>
+          </div>
+
+          {/* Google Button */}
+          <button className="google-btn" disabled>
+            <span className="google-icon">G</span>
+            Continue with Google
+          </button>
+
+          {/* Sign Up Link */}
+          <div className="signup-footer">
+            Don't have a LearnHub account?{' '}
+            <Link to="/signup" className="signup-link">
+              Create an account
+            </Link>
+          </div>
         </div>
       </div>
     </div>
